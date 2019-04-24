@@ -24,23 +24,40 @@ public class Client {
 
 			while (true) {
 
-				System.out.println(fromServer.readLine());
-				String first = userEntry.readLine();
-				forServer.println(first);
+				String first, second, answer;
+				boolean exit = false;
+
+				do {
+					System.out.println(fromServer.readLine());
+					first = userEntry.readLine();
+					forServer.println(first);
+					answer = fromServer.readLine();
+				} while (!answer.equals("OK"));
+
+				do {
+					System.out.println(fromServer.readLine());
+					second = userEntry.readLine();
+					forServer.println(second);
+					answer = fromServer.readLine();
+				} while (!answer.equals("OK"));
 
 				System.out.println(fromServer.readLine());
-				String second = userEntry.readLine();
-				forServer.println(second);
-				
+				String operation = userEntry.readLine();
+				forServer.println(operation);
+
 				String result = fromServer.readLine();
-				
-				if(result.equals("Goodbye! :)")){
+
+				if (result.equals("Goodbye! :)")) {
 					System.out.println(result);
-					break;
+					exit = true;
+				} else {
+					System.out.println("Result: " + result + "\n");
 				}
 
-				System.out.println("Result: " + result);
+				if (exit)
+					break;
 			}
+
 			socketForCommunication.close();
 		} catch (IOException e) {
 			System.out.println("Problems with connection.");
