@@ -32,6 +32,10 @@ public class Client {
 					first = userEntry.readLine();
 					forServer.println(first);
 					answer = fromServer.readLine();
+					
+					if(!answer.equals("OK"))
+						System.out.println(answer);
+					
 				} while (!answer.equals("OK"));
 
 				do {
@@ -39,11 +43,22 @@ public class Client {
 					second = userEntry.readLine();
 					forServer.println(second);
 					answer = fromServer.readLine();
+						
+					if(!answer.equals("OK"))
+						System.out.println(answer);
+					
 				} while (!answer.equals("OK"));
 
-				System.out.println(fromServer.readLine());
-				String operation = userEntry.readLine();
-				forServer.println(operation);
+				do {
+					System.out.println(fromServer.readLine());
+					String operation = userEntry.readLine();
+					forServer.println(operation);
+					answer = fromServer.readLine();
+					
+					if(!answer.equals("OK"))
+						System.out.println(answer);
+					
+				} while (!answer.equals("OK"));				
 
 				String result = fromServer.readLine();
 
@@ -57,8 +72,6 @@ public class Client {
 				if (exit)
 					break;
 			}
-
-			socketForCommunication.close();
 		} catch (IOException e) {
 			System.out.println("Problems with connection.");
 		}
