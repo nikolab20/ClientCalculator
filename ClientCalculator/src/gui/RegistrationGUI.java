@@ -12,6 +12,8 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class RegistrationGUI extends JFrame {
 
@@ -31,6 +33,12 @@ public class RegistrationGUI extends JFrame {
 	 * Create the frame.
 	 */
 	public RegistrationGUI() {
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				GUIControler.stopRegOrLog();
+			}
+		});
 		setTitle("Registration");
 		setMinimumSize(new Dimension(300, 145));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -119,7 +127,7 @@ public class RegistrationGUI extends JFrame {
 			btnRegister.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					GUIControler.register(jtfUsername, jtfPassword, ClientGUI.registerWindow, ClientGUI.jtfFirstNumber,
-							ClientGUI.jtfSecondNumber, ClientGUI.btnCalculate);
+							ClientGUI.jtfSecondNumber, ClientGUI.btnCalculate, ClientGUI.itemLogin);
 				}
 			});
 		}

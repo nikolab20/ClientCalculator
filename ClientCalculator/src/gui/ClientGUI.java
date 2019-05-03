@@ -60,7 +60,7 @@ public class ClientGUI extends JFrame {
 	static JMenuItem itemRegister;
 	static JMenuItem itemGuest;
 	private JSeparator separator_1;
-	private JMenuItem mntmHistory;
+	static JMenuItem itemHistory;
 	private JSeparator separator_2;
 
 	/**
@@ -228,7 +228,7 @@ public class ClientGUI extends JFrame {
 			mnFile.add(getItemRegister());
 			mnFile.add(getItemGuest());
 			mnFile.add(getSeparator_2());
-			mnFile.add(getMntmHistory());
+			mnFile.add(getItemHistory());
 			mnFile.add(getSeparator_1());
 			mnFile.add(getItemDisconnect());
 		}
@@ -240,7 +240,8 @@ public class ClientGUI extends JFrame {
 			itemConnect = new JMenuItem("Connect ");
 			itemConnect.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					GUIControler.connectOnTheServer(contentPane, colorPanel, itemConnect, itemDisconnect);
+					GUIControler.connectOnTheServer(contentPane, colorPanel, itemConnect, itemDisconnect, itemLogin,
+							itemRegister, itemGuest);
 				}
 			});
 		}
@@ -254,7 +255,7 @@ public class ClientGUI extends JFrame {
 			itemDisconnect.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					GUIControler.disconnectFromServer(jtfFirstNumber, jtfSecondNumber, jtfResult, colorPanel,
-							itemConnect, itemDisconnect, btnCalculate, itemLogin, itemRegister, itemGuest);
+							itemConnect, itemDisconnect, btnCalculate, itemLogin, itemRegister, itemGuest, itemHistory);
 				}
 			});
 		}
@@ -339,6 +340,7 @@ public class ClientGUI extends JFrame {
 	private JMenuItem getItemLogin() {
 		if (itemLogin == null) {
 			itemLogin = new JMenuItem("Login");
+			itemLogin.setEnabled(false);
 			itemLogin.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					GUIControler.loginStart();
@@ -354,6 +356,7 @@ public class ClientGUI extends JFrame {
 	private JMenuItem getItemRegister() {
 		if (itemRegister == null) {
 			itemRegister = new JMenuItem("Register");
+			itemRegister.setEnabled(false);
 			itemRegister.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					GUIControler.registerStart();
@@ -369,13 +372,10 @@ public class ClientGUI extends JFrame {
 	private JMenuItem getItemGuest() {
 		if (itemGuest == null) {
 			itemGuest = new JMenuItem("Guest");
+			itemGuest.setEnabled(false);
 			itemGuest.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					GUIControler.guest();
-
-					jtfFirstNumber.setEnabled(true);
-					jtfSecondNumber.setEnabled(true);
-					btnCalculate.setEnabled(true);
+					GUIControler.guest(jtfFirstNumber, jtfSecondNumber, btnCalculate, itemLogin, itemRegister, itemGuest, itemHistory);
 				}
 			});
 		}
@@ -388,17 +388,20 @@ public class ClientGUI extends JFrame {
 		}
 		return separator_1;
 	}
-	private JMenuItem getMntmHistory() {
-		if (mntmHistory == null) {
-			mntmHistory = new JMenuItem("History");
-			mntmHistory.addActionListener(new ActionListener() {
+
+	private JMenuItem getItemHistory() {
+		if (itemHistory == null) {
+			itemHistory = new JMenuItem("History");
+			itemHistory.setEnabled(false);
+			itemHistory.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					GUIControler.history();
 				}
 			});
 		}
-		return mntmHistory;
+		return itemHistory;
 	}
+
 	private JSeparator getSeparator_2() {
 		if (separator_2 == null) {
 			separator_2 = new JSeparator();

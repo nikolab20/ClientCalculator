@@ -8,16 +8,12 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.sql.Date;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.xml.crypto.Data;
 
 public class GUIControler {
 
@@ -43,7 +39,7 @@ public class GUIControler {
 	}
 
 	public static void connectOnTheServer(JPanel contentPane, JPanel colorPanel, JMenuItem connectItem,
-			JMenuItem disconnectItem) {
+			JMenuItem disconnectItem, JMenuItem itemLogin, JMenuItem itemRegister, JMenuItem itemGuest) {
 
 		try {
 			socketForCommunication = new Socket("localhost", 9000);
@@ -54,6 +50,9 @@ public class GUIControler {
 
 			colorPanel.setBackground(Color.GREEN);
 			connectItem.setEnabled(false);
+			itemLogin.setEnabled(true);
+			itemRegister.setEnabled(true);
+			itemGuest.setEnabled(true);
 			disconnectItem.setEnabled(true);
 			connected = true;
 
@@ -98,14 +97,15 @@ public class GUIControler {
 			JOptionPane.showMessageDialog(contentPane, "You're not connected!", "Error!", JOptionPane.ERROR_MESSAGE);
 			connected = false;
 			disconnectFromServer(jtfFirstNumber, jtfSecondNumber, jtfResult, colorPanel, connectItem, disconnectItem,
-					ClientGUI.btnCalculate, ClientGUI.itemLogin, ClientGUI.itemRegister, ClientGUI.itemGuest);
+					ClientGUI.btnCalculate, ClientGUI.itemLogin, ClientGUI.itemRegister, ClientGUI.itemGuest,
+					ClientGUI.itemHistory);
 		}
 
 	}
 
 	public static void disconnectFromServer(JTextField jtfFirstNumber, JTextField jtfSecondNumber, JTextField jtfResult,
 			JPanel colorPanel, JMenuItem connectItem, JMenuItem disconnectItem, JButton btnCalculate,
-			JMenuItem itemLogin, JMenuItem itemRegister, JMenuItem itemGuest) {
+			JMenuItem itemLogin, JMenuItem itemRegister, JMenuItem itemGuest, JMenuItem historyItem) {
 		if (connected) {
 			forServer.println("/exit");
 			forServer.println("/exit");
@@ -119,12 +119,13 @@ public class GUIControler {
 		jtfFirstNumber.setEnabled(false);
 		jtfSecondNumber.setEnabled(false);
 		btnCalculate.setEnabled(false);
-		itemLogin.setEnabled(true);
-		itemRegister.setEnabled(true);
-		itemGuest.setEnabled(true);
+		itemLogin.setEnabled(false);
+		itemRegister.setEnabled(false);
+		itemGuest.setEnabled(false);
 		colorPanel.setBackground(Color.RED);
 		connectItem.setEnabled(true);
 		disconnectItem.setEnabled(false);
+		historyItem.setEnabled(false);
 	}
 
 	public static void exitApp(JPanel contentPane, JTextField jtfFirstNumber, JTextField jtfSecondNumber,
@@ -134,7 +135,8 @@ public class GUIControler {
 
 		if (option == JOptionPane.YES_OPTION) {
 			disconnectFromServer(jtfFirstNumber, jtfSecondNumber, jtfResult, colorPanel, connectItem, disconnectItem,
-					ClientGUI.btnCalculate, ClientGUI.itemLogin, ClientGUI.itemRegister, ClientGUI.itemGuest);
+					ClientGUI.btnCalculate, ClientGUI.itemLogin, ClientGUI.itemRegister, ClientGUI.itemGuest,
+					ClientGUI.itemHistory);
 			System.exit(0);
 		}
 	}
@@ -147,13 +149,22 @@ public class GUIControler {
 		forServer.println("/reg");
 	}
 
-	public static void guest() {
+	public static void guest(JTextField firstNumber, JTextField secondNumber, JButton btnCalculate, JMenuItem itemLogin,
+			JMenuItem registerItem, JMenuItem guestItem, JMenuItem itemHistory) {
 		forServer.println("/guest");
+		
+		firstNumber.setEnabled(true);
+		secondNumber.setEnabled(true);
+		btnCalculate.setEnabled(true);
+		itemLogin.setEnabled(false);
+		registerItem.setEnabled(false);
+		guestItem.setEnabled(false);
+		itemHistory.setEnabled(false);
 	}
 
 	public static void login(JTextField username, JTextField password, LoginGUI loginWindow, JTextField firstNumber,
 			JTextField secondNumber, JButton btnCalculate, JMenuItem itemLogin, JMenuItem registerItem,
-			JMenuItem guestItem) {
+			JMenuItem guestItem, JMenuItem itemHistory) {
 		try {
 
 			String answer = null;
@@ -175,6 +186,7 @@ public class GUIControler {
 				itemLogin.setEnabled(false);
 				registerItem.setEnabled(false);
 				guestItem.setEnabled(false);
+				itemHistory.setEnabled(true);
 
 				loginWindow.dispose();
 			}
@@ -188,7 +200,7 @@ public class GUIControler {
 	}
 
 	public static void register(JTextField username, JTextField password, RegistrationGUI registerWindow,
-			JTextField firstNumber, JTextField secondNumber, JButton btnCalculate) {
+			JTextField firstNumber, JTextField secondNumber, JButton btnCalculate, JMenuItem itemLogin) {
 		try {
 
 			String answer = null;
@@ -208,6 +220,7 @@ public class GUIControler {
 				firstNumber.setEnabled(true);
 				secondNumber.setEnabled(true);
 				btnCalculate.setEnabled(true);
+				itemLogin.setEnabled(false);
 
 				registerWindow.dispose();
 			}
@@ -240,11 +253,19 @@ public class GUIControler {
 
 			writer.println(history);
 
+			JOptionPane.showMessageDialog(ClientGUI.contentPane, "Your expression history has been prepared!",
+					"Notice!", JOptionPane.NO_OPTION);
+
 			writer.close();
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(ClientGUI.contentPane, "Problem with the return of history!", "Error!",
 					JOptionPane.ERROR_MESSAGE);
 		}
 
+	}
+
+	public static void stopRegOrLog() {
+		forServer.println("/exit");
+		forServer.println("/exit");
 	}
 }

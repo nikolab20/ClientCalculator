@@ -12,6 +12,8 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class LoginGUI extends JFrame {
 
@@ -31,6 +33,12 @@ public class LoginGUI extends JFrame {
 	 * Create the frame.
 	 */
 	public LoginGUI() {
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				GUIControler.stopRegOrLog();
+			}
+		});
 		setMaximumSize(new Dimension(2147483647, 145));
 		setPreferredSize(new Dimension(300, 145));
 		setMinimumSize(new Dimension(300, 145));
@@ -121,7 +129,7 @@ public class LoginGUI extends JFrame {
 			btnLogin.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					GUIControler.login(jtfUsername, jtfPassword, ClientGUI.loginWindow, ClientGUI.jtfFirstNumber,
-							ClientGUI.jtfSecondNumber, ClientGUI.btnCalculate, ClientGUI.itemLogin, ClientGUI.itemRegister, ClientGUI.itemGuest);
+							ClientGUI.jtfSecondNumber, ClientGUI.btnCalculate, ClientGUI.itemLogin, ClientGUI.itemRegister, ClientGUI.itemGuest, ClientGUI.itemHistory);
 				}
 			});
 		}
