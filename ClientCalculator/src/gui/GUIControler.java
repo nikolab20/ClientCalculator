@@ -8,8 +8,11 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 
+import javax.swing.JButton;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class GUIControler {
@@ -18,6 +21,7 @@ public class GUIControler {
 	static BufferedReader fromServer = null;
 	static PrintStream forServer = null;
 	static BufferedReader userEntry = null;
+	static boolean connected = false;
 
 	public static ClientGUI mainWindow;
 
@@ -34,7 +38,8 @@ public class GUIControler {
 		});
 	}
 
-	public static void connectOnTheServer(JPanel contentPane, JPanel colorPanel) {
+	public static void connectOnTheServer(JPanel contentPane, JPanel colorPanel, JMenuItem connectItem,
+			JMenuItem disconnectItem) {
 
 		try {
 			socketForCommunication = new Socket("localhost", 9000);
@@ -42,45 +47,149 @@ public class GUIControler {
 			fromServer = new BufferedReader(new InputStreamReader(socketForCommunication.getInputStream()));
 			forServer = new PrintStream(socketForCommunication.getOutputStream());
 			userEntry = new BufferedReader(new InputStreamReader(System.in));
-			
+
 			colorPanel.setBackground(Color.GREEN);
-			
+			connectItem.setEnabled(false);
+			disconnectItem.setEnabled(true);
+			connected = true;
+
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(contentPane, "Socket closed.", "Error!", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
-	public static void calculate(JTextField firstNumber, JTextField secondNumber, JTextField result, String operation,
-			JPanel contentPane) {
+	public static void calculate(JTextField jtfFirstNumber, JTextField jtfSecondNumber, JTextField jtfResult,
+			JPanel colorPanel, JMenuItem connectItem, JMenuItem disconnectItem, String operation, JPanel contentPane) {
 
 		String first, second, answer;
 
 		try {
-			first = firstNumber.getText();
+			first = jtfFirstNumber.getText();
 			forServer.println(first);
 
-			second = secondNumber.getText();
+			second = jtfSecondNumber.getText();
 			forServer.println(second);
 
 			forServer.println(operation);
 
 			answer = fromServer.readLine();
-			
+
 			if (!answer.equals("OK"))
 				JOptionPane.showMessageDialog(contentPane, answer, "Error!", JOptionPane.ERROR_MESSAGE);
-			
+
 			answer = fromServer.readLine();
-			
+
 			try {
 				Double.parseDouble(answer);
-				result.setText(answer);
+				jtfResult.setText(answer);
 			} catch (NumberFormatException e) {
 				JOptionPane.showMessageDialog(contentPane, answer, "Error!", JOptionPane.ERROR_MESSAGE);
 			}
-			
+
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(contentPane, "Problems with communication!", "Error!", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(contentPane, "You're not connected!", "Error!", JOptionPane.ERROR_MESSAGE);
+			connected = false;
+			disconnectFromServer(jtfFirstNumber, jtfSecondNumber, jtfResult, colorPanel, connectItem, disconnectItem);
 		}
 
+	}
+
+	public static void disconnectFromServer(JTextField jtfFirstNumber, JTextField jtfSecondNumber, JTextField jtfResult,
+			JPanel colorPanel, JMenuItem connectItem, JMenuItem disconnectItem) {
+		if (connected) {
+			forServer.println("/exit");
+			connected = false;
+		}
+
+		jtfFirstNumber.setText("");
+		jtfSecondNumber.setText("");
+		jtfResult.setText("");
+		colorPanel.setBackground(Color.RED);
+		connectItem.setEnabled(true);
+		disconnectItem.setEnabled(false);
+	}
+
+	public static void exitApp(JPanel contentPane, JTextField jtfFirstNumber, JTextField jtfSecondNumber,
+			JTextField jtfResult, JPanel colorPanel, JMenuItem connectItem, JMenuItem disconnectItem) {
+		int option = JOptionPane.showConfirmDialog(mainWindow, "Do you really want to quit?", "Exit",
+				JOptionPane.YES_NO_OPTION);
+
+		if (option == JOptionPane.YES_OPTION) {
+			disconnectFromServer(jtfFirstNumber, jtfSecondNumber, jtfResult, colorPanel, connectItem, disconnectItem);
+			System.exit(0);
+		}
+	}
+
+	public static void loginStart() {
+		forServer.println("/login");
+	}
+
+	public static void registerStart() {
+		forServer.println("/reg");
+	}
+
+	public static void guest() {
+		forServer.println("/guest");
+	}
+	
+	public static void login(JTextField username, JTextField password, LoginGUI loginWindow, JTextField firstNumber,
+			JTextField secondNumber, JButton btnCalculate) {
+		try {
+
+			String answer = null;
+
+			forServer.println(username.getText());
+			forServer.println(password.getText());
+
+			answer = fromServer.readLine();
+
+			if (!answer.equals("OK")) {
+				JOptionPane.showMessageDialog(ClientGUI.loginWindow.getContentPane(), answer, "Error!",
+						JOptionPane.ERROR_MESSAGE);
+			} else {
+				firstNumber.setEnabled(true);
+				secondNumber.setEnabled(true);
+				btnCalculate.setEnabled(true);
+
+				loginWindow.dispose();
+			}
+
+		} catch (IOException e) {
+			ClientGUI.loginWindow.dispose();
+
+			JOptionPane.showMessageDialog(ClientGUI.contentPane, "Server's not in function!", "Error!",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	public static void register(JTextField username, JTextField password, RegistrationGUI registerWindow,
+			JTextField firstNumber, JTextField secondNumber, JButton btnCalculate) {
+		try {
+
+			String answer = null;
+
+			forServer.println(username.getText());
+			forServer.println(password.getText());
+
+			answer = fromServer.readLine();
+
+			if (!answer.equals("OK")) {
+				JOptionPane.showMessageDialog(ClientGUI.registerWindow.getContentPane(), answer, "Error!",
+						JOptionPane.ERROR_MESSAGE);
+			} else {
+				firstNumber.setEnabled(true);
+				secondNumber.setEnabled(true);
+				btnCalculate.setEnabled(true);
+
+				registerWindow.dispose();
+			}
+
+		} catch (IOException e) {
+			ClientGUI.registerWindow.dispose();
+
+			JOptionPane.showMessageDialog(ClientGUI.contentPane, "Server's not in function!", "Error!",
+					JOptionPane.ERROR_MESSAGE);
+
+		}
 	}
 }

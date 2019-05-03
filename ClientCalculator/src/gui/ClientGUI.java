@@ -1,10 +1,6 @@
 package gui;
 
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
-import java.util.Enumeration;
-import java.util.LinkedList;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -14,7 +10,6 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.Color;
-import java.awt.Component;
 
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -23,12 +18,12 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.JRadioButton;
-import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
-import javax.swing.ButtonModel;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class ClientGUI extends JFrame {
 
@@ -36,20 +31,20 @@ public class ClientGUI extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
+	static JPanel contentPane;
 	private JMenuBar menuBar;
 	private JPanel panel;
 	private JLabel lblFirstNumber;
 	private JLabel lblSecondNumber;
 	private JLabel lblResult;
-	private JPanel colorPanel;
+	static JPanel colorPanel;
 	private JTextField jtfFirstNumber;
 	private JTextField jtfSecondNumber;
 	private JTextField jtfResult;
 	private JButton btnCalculate;
 	private JMenu mnFile;
-	private JMenuItem itemConnect;
-	private JMenuItem itemExit;
+	static JMenuItem itemConnect;
+	static JMenuItem itemDisconnect;
 	private JSeparator separator;
 	private JPanel operationPanel;
 	private JRadioButton rdbtnAddition;
@@ -57,6 +52,14 @@ public class ClientGUI extends JFrame {
 	private JRadioButton rdbtnMultiplication;
 	private JRadioButton rdbtnDivision;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
+
+	public static RegistrationGUI registerWindow = null;
+	public static LoginGUI loginWindow = null;
+
+	private JMenuItem itemLogin;
+	private JMenuItem itemRegister;
+	private JMenuItem itemGuest;
+	private JSeparator separator_1;
 
 	/**
 	 * Launch the application.
@@ -66,6 +69,13 @@ public class ClientGUI extends JFrame {
 	 * Create the frame.
 	 */
 	public ClientGUI() {
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				GUIControler.exitApp(contentPane, jtfFirstNumber, jtfSecondNumber, jtfResult, colorPanel, itemConnect,
+						itemDisconnect);
+			}
+		});
 		setPreferredSize(new Dimension(300, 180));
 		setMinimumSize(new Dimension(400, 190));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -169,6 +179,7 @@ public class ClientGUI extends JFrame {
 	private JTextField getJtfFirstNumber() {
 		if (jtfFirstNumber == null) {
 			jtfFirstNumber = new JTextField();
+			jtfFirstNumber.setEnabled(false);
 			jtfFirstNumber.setColumns(10);
 		}
 		return jtfFirstNumber;
@@ -177,6 +188,7 @@ public class ClientGUI extends JFrame {
 	private JTextField getJtfSecondNumber() {
 		if (jtfSecondNumber == null) {
 			jtfSecondNumber = new JTextField();
+			jtfSecondNumber.setEnabled(false);
 			jtfSecondNumber.setColumns(10);
 		}
 		return jtfSecondNumber;
@@ -194,10 +206,11 @@ public class ClientGUI extends JFrame {
 	private JButton getBtnCalculate() {
 		if (btnCalculate == null) {
 			btnCalculate = new JButton("Calculate");
+			btnCalculate.setEnabled(false);
 			btnCalculate.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					GUIControler.calculate(jtfFirstNumber, jtfSecondNumber, jtfResult, selectedOperation(),
-							contentPane);
+					GUIControler.calculate(jtfFirstNumber, jtfSecondNumber, jtfResult, colorPanel, itemConnect,
+							itemDisconnect, selectedOperation(), contentPane);
 				}
 			});
 		}
@@ -209,7 +222,11 @@ public class ClientGUI extends JFrame {
 			mnFile = new JMenu("File");
 			mnFile.add(getItemConnect());
 			mnFile.add(getSeparator());
-			mnFile.add(getItemExit());
+			mnFile.add(getItemLogin());
+			mnFile.add(getItemRegister());
+			mnFile.add(getItemGuest());
+			mnFile.add(getSeparator_1());
+			mnFile.add(getItemDisconnect());
 		}
 		return mnFile;
 	}
@@ -219,18 +236,25 @@ public class ClientGUI extends JFrame {
 			itemConnect = new JMenuItem("Connect ");
 			itemConnect.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					GUIControler.connectOnTheServer(contentPane, colorPanel);
+					GUIControler.connectOnTheServer(contentPane, colorPanel, itemConnect, itemDisconnect);
 				}
 			});
 		}
 		return itemConnect;
 	}
 
-	private JMenuItem getItemExit() {
-		if (itemExit == null) {
-			itemExit = new JMenuItem("Exit");
+	private JMenuItem getItemDisconnect() {
+		if (itemDisconnect == null) {
+			itemDisconnect = new JMenuItem("Disconnect");
+			itemDisconnect.setEnabled(false);
+			itemDisconnect.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					GUIControler.disconnectFromServer(jtfFirstNumber, jtfSecondNumber, jtfResult, colorPanel,
+							itemConnect, itemDisconnect);
+				}
+			});
 		}
-		return itemExit;
+		return itemDisconnect;
 	}
 
 	private JSeparator getSeparator() {
@@ -306,5 +330,58 @@ public class ClientGUI extends JFrame {
 			return "*";
 		else
 			return "/";
+	}
+
+	private JMenuItem getItemLogin() {
+		if (itemLogin == null) {
+			itemLogin = new JMenuItem("Login");
+			itemLogin.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					GUIControler.loginStart();
+					loginWindow = new LoginGUI();
+					loginWindow.setVisible(true);
+					loginWindow.setLocationRelativeTo(null);
+				}
+			});
+		}
+		return itemLogin;
+	}
+
+	private JMenuItem getItemRegister() {
+		if (itemRegister == null) {
+			itemRegister = new JMenuItem("Register");
+			itemRegister.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					GUIControler.registerStart();
+					registerWindow = new RegistrationGUI();
+					registerWindow.setVisible(true);
+					registerWindow.setLocationRelativeTo(null);
+				}
+			});
+		}
+		return itemRegister;
+	}
+
+	private JMenuItem getItemGuest() {
+		if (itemGuest == null) {
+			itemGuest = new JMenuItem("Guest");
+			itemGuest.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					GUIControler.guest();
+
+					jtfFirstNumber.setEnabled(true);
+					jtfSecondNumber.setEnabled(true);
+					btnCalculate.setEnabled(true);
+				}
+			});
+		}
+		return itemGuest;
+	}
+
+	private JSeparator getSeparator_1() {
+		if (separator_1 == null) {
+			separator_1 = new JSeparator();
+		}
+		return separator_1;
 	}
 }
