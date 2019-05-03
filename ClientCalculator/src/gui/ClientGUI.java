@@ -38,10 +38,10 @@ public class ClientGUI extends JFrame {
 	private JLabel lblSecondNumber;
 	private JLabel lblResult;
 	static JPanel colorPanel;
-	private JTextField jtfFirstNumber;
-	private JTextField jtfSecondNumber;
+	static JTextField jtfFirstNumber;
+	static JTextField jtfSecondNumber;
 	private JTextField jtfResult;
-	private JButton btnCalculate;
+	static JButton btnCalculate;
 	private JMenu mnFile;
 	static JMenuItem itemConnect;
 	static JMenuItem itemDisconnect;
@@ -56,9 +56,9 @@ public class ClientGUI extends JFrame {
 	public static RegistrationGUI registerWindow = null;
 	public static LoginGUI loginWindow = null;
 
-	private JMenuItem itemLogin;
-	private JMenuItem itemRegister;
-	private JMenuItem itemGuest;
+	static JMenuItem itemLogin;
+	static JMenuItem itemRegister;
+	static JMenuItem itemGuest;
 	private JSeparator separator_1;
 
 	/**
@@ -250,7 +250,7 @@ public class ClientGUI extends JFrame {
 			itemDisconnect.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					GUIControler.disconnectFromServer(jtfFirstNumber, jtfSecondNumber, jtfResult, colorPanel,
-							itemConnect, itemDisconnect);
+							itemConnect, itemDisconnect, btnCalculate, itemLogin, itemRegister, itemGuest);
 				}
 			});
 		}

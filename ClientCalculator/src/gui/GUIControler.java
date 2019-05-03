@@ -12,7 +12,6 @@ import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class GUIControler {
@@ -74,8 +73,9 @@ public class GUIControler {
 
 			answer = fromServer.readLine();
 
-			if (!answer.equals("OK"))
+			if (!answer.equals("OK")) {
 				JOptionPane.showMessageDialog(contentPane, answer, "Error!", JOptionPane.ERROR_MESSAGE);
+			}
 
 			answer = fromServer.readLine();
 
@@ -84,19 +84,26 @@ public class GUIControler {
 				jtfResult.setText(answer);
 			} catch (NumberFormatException e) {
 				JOptionPane.showMessageDialog(contentPane, answer, "Error!", JOptionPane.ERROR_MESSAGE);
+				jtfFirstNumber.setText("");
+				jtfSecondNumber.setText("");
+				jtfResult.setText("");
 			}
 
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(contentPane, "You're not connected!", "Error!", JOptionPane.ERROR_MESSAGE);
 			connected = false;
-			disconnectFromServer(jtfFirstNumber, jtfSecondNumber, jtfResult, colorPanel, connectItem, disconnectItem);
+			disconnectFromServer(jtfFirstNumber, jtfSecondNumber, jtfResult, colorPanel, connectItem, disconnectItem,
+					ClientGUI.btnCalculate, ClientGUI.itemLogin, ClientGUI.itemRegister, ClientGUI.itemGuest);
 		}
 
 	}
 
 	public static void disconnectFromServer(JTextField jtfFirstNumber, JTextField jtfSecondNumber, JTextField jtfResult,
-			JPanel colorPanel, JMenuItem connectItem, JMenuItem disconnectItem) {
+			JPanel colorPanel, JMenuItem connectItem, JMenuItem disconnectItem, JButton btnCalculate,
+			JMenuItem itemLogin, JMenuItem itemRegister, JMenuItem itemGuest) {
 		if (connected) {
+			forServer.println("/exit");
+			forServer.println("/exit");
 			forServer.println("/exit");
 			connected = false;
 		}
@@ -104,6 +111,12 @@ public class GUIControler {
 		jtfFirstNumber.setText("");
 		jtfSecondNumber.setText("");
 		jtfResult.setText("");
+		jtfFirstNumber.setEnabled(false);
+		jtfSecondNumber.setEnabled(false);
+		btnCalculate.setEnabled(false);
+		itemLogin.setEnabled(true);
+		itemRegister.setEnabled(true);
+		itemGuest.setEnabled(true);
 		colorPanel.setBackground(Color.RED);
 		connectItem.setEnabled(true);
 		disconnectItem.setEnabled(false);
@@ -115,7 +128,8 @@ public class GUIControler {
 				JOptionPane.YES_NO_OPTION);
 
 		if (option == JOptionPane.YES_OPTION) {
-			disconnectFromServer(jtfFirstNumber, jtfSecondNumber, jtfResult, colorPanel, connectItem, disconnectItem);
+			disconnectFromServer(jtfFirstNumber, jtfSecondNumber, jtfResult, colorPanel, connectItem, disconnectItem,
+					ClientGUI.btnCalculate, ClientGUI.itemLogin, ClientGUI.itemRegister, ClientGUI.itemGuest);
 			System.exit(0);
 		}
 	}
@@ -131,9 +145,10 @@ public class GUIControler {
 	public static void guest() {
 		forServer.println("/guest");
 	}
-	
+
 	public static void login(JTextField username, JTextField password, LoginGUI loginWindow, JTextField firstNumber,
-			JTextField secondNumber, JButton btnCalculate) {
+			JTextField secondNumber, JButton btnCalculate, JMenuItem itemLogin, JMenuItem registerItem,
+			JMenuItem guestItem) {
 		try {
 
 			String answer = null;
@@ -147,9 +162,14 @@ public class GUIControler {
 				JOptionPane.showMessageDialog(ClientGUI.loginWindow.getContentPane(), answer, "Error!",
 						JOptionPane.ERROR_MESSAGE);
 			} else {
+				JOptionPane.showMessageDialog(ClientGUI.loginWindow.getContentPane(), "Successful logging!", "Notice",
+						JOptionPane.NO_OPTION);
 				firstNumber.setEnabled(true);
 				secondNumber.setEnabled(true);
 				btnCalculate.setEnabled(true);
+				itemLogin.setEnabled(false);
+				registerItem.setEnabled(false);
+				guestItem.setEnabled(false);
 
 				loginWindow.dispose();
 			}
@@ -177,6 +197,9 @@ public class GUIControler {
 				JOptionPane.showMessageDialog(ClientGUI.registerWindow.getContentPane(), answer, "Error!",
 						JOptionPane.ERROR_MESSAGE);
 			} else {
+				JOptionPane.showMessageDialog(ClientGUI.registerWindow.getContentPane(), "Successful registration!",
+						"Notice", JOptionPane.NO_OPTION);
+
 				firstNumber.setEnabled(true);
 				secondNumber.setEnabled(true);
 				btnCalculate.setEnabled(true);
