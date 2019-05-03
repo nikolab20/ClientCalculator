@@ -60,6 +60,8 @@ public class ClientGUI extends JFrame {
 	static JMenuItem itemRegister;
 	static JMenuItem itemGuest;
 	private JSeparator separator_1;
+	private JMenuItem mntmHistory;
+	private JSeparator separator_2;
 
 	/**
 	 * Launch the application.
@@ -225,6 +227,8 @@ public class ClientGUI extends JFrame {
 			mnFile.add(getItemLogin());
 			mnFile.add(getItemRegister());
 			mnFile.add(getItemGuest());
+			mnFile.add(getSeparator_2());
+			mnFile.add(getMntmHistory());
 			mnFile.add(getSeparator_1());
 			mnFile.add(getItemDisconnect());
 		}
@@ -383,5 +387,22 @@ public class ClientGUI extends JFrame {
 			separator_1 = new JSeparator();
 		}
 		return separator_1;
+	}
+	private JMenuItem getMntmHistory() {
+		if (mntmHistory == null) {
+			mntmHistory = new JMenuItem("History");
+			mntmHistory.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					GUIControler.history();
+				}
+			});
+		}
+		return mntmHistory;
+	}
+	private JSeparator getSeparator_2() {
+		if (separator_2 == null) {
+			separator_2 = new JSeparator();
+		}
+		return separator_2;
 	}
 }

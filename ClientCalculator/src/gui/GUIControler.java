@@ -6,13 +6,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.net.Socket;
+import java.sql.Date;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.xml.crypto.Data;
 
 public class GUIControler {
 
@@ -214,5 +219,32 @@ public class GUIControler {
 					JOptionPane.ERROR_MESSAGE);
 
 		}
+	}
+
+	public static void history() {
+		forServer.println("/history");
+		forServer.println("/history");
+		forServer.println("/history");
+
+		try {
+			String history = fromServer.readLine();
+
+			Calendar today = Calendar.getInstance();
+			int day = today.get(Calendar.DAY_OF_MONTH);
+			int month = today.get(Calendar.MONTH);
+			int year = today.get(Calendar.YEAR);
+
+			String path = day + "-" + month + "-" + year + ".txt";
+
+			PrintWriter writer = new PrintWriter("history/" + path);
+
+			writer.println(history);
+
+			writer.close();
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(ClientGUI.contentPane, "Problem with the return of history!", "Error!",
+					JOptionPane.ERROR_MESSAGE);
+		}
+
 	}
 }
